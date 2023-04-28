@@ -23,9 +23,11 @@ CFLAGS = \
 
 LDFLAGS =
 
-all: intermezzo.bin dump-sbk-via-usb.bin
+# all: intermezzo.bin dump-sbk-via-usb.bin
+all: intermezzo.bin dump-sbk-via-usb.bin ipatch_rcm_sample.bin
 
-ENTRY_POINT_ADDRESS := 0x4000A000
+# ENTRY_POINT_ADDRESS := 0x4000A000
+ENTRY_POINT_ADDRESS := 0x40010000
 
 # Provide the definitions used in the intermezzo stub.
 DEFINES := \
@@ -42,6 +44,12 @@ dump-sbk-via-usb.elf: dump-sbk-via-usb.o
 
 dump-sbk-via-usb.o: dump-sbk-via-usb.S
 	$(CC) $(CFLAGS) $(DEFINES) $< -c -o $@
+
+ipatch_rcm_sample.elf: ipatch_rcm_sample.o
+	$(LD) -T ipatch_rcm_sample.lds --defsym LOAD_ADDR=$(ENTRY_POINT_ADDRESS) $(LDFLAGS) $^ -o $@
+
+ipatch_rcm_sample.o: ipatch_rcm_sample.c
+	$(CC) $(CFLAGS32) $(DEFINES) $< -c -o $@
 
 %.bin: %.elf
 	$(OBJCOPY) -v -O binary $< $@

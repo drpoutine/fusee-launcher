@@ -46,15 +46,15 @@ RCM_V4P_HEADER_SIZE = 680
 
 # The address where the RCM payload is placed.
 # This is fixed for most device.
-RCM_PAYLOAD_ADDR    = 0x4000A000
+RCM_PAYLOAD_ADDR    = 0x40010000
 
 # The address where the user payload is expected to begin.
-PAYLOAD_START_ADDR  = 0x4000AE40
+PAYLOAD_START_ADDR  = 0x40010E40
 
 # Specify the range of addresses where we should inject our
 # payload address.
-STACK_SPRAY_START   = 0x4000EE40
-STACK_SPRAY_END     = 0x40011000
+STACK_SPRAY_START   = 0x40014E40
+STACK_SPRAY_END     = 0x40017000
 
 class RCMError(Exception):
     def __init__(self, rcm_error_code):
@@ -467,8 +467,8 @@ class RCMHax:
     DEFAULT_PID = 0x7330
 
     # Exploit specifics
-    COPY_BUFFER_ADDRESSES   = [0x40003000, 0x40005000]   # The addresses of the DMA buffers we can trigger a copy _from_.
-    STACK_END               = 0x4000A000                 # The address just after the end of the device's stack.
+    COPY_BUFFER_ADDRESSES   = [0x40005000, 0x40009000]   # The addresses of the DMA buffers we can trigger a copy _from_.
+    STACK_END               = 0x40010000                 # The address just after the end of the device's stack.
 
     def __init__(self, wait_for_device=False, os_override=None, vid=None, pid=None, override_checks=False):
         """ Set up our RCM hack connection."""
@@ -688,7 +688,7 @@ if not os.path.isfile(intermezzo_path):
 
 # Get a connection to our device.
 try:
-    switch = RCMHax(wait_for_device=arguments.wait, vid=arguments.vid, 
+    switch = RCMHax(wait_for_device=arguments.wait, vid=arguments.vid,
             pid=arguments.pid, os_override=arguments.platform, override_checks=arguments.skip_checks)
 except IOError as e:
     print(e)
@@ -725,7 +725,7 @@ with open("intermezzo_patched.bin", "wb") as f:
 # Prefix the image with an RCM command, so it winds up loaded into memory
 # at the right location (0x40010000).
 
-RCM_HEADER_SIZE = RCM_V1_HEADER_SIZE
+RCM_HEADER_SIZE = RCM_V4P_HEADER_SIZE
 
 # Use the maximum length accepted by RCM, so we can transmit as much payload as
 # we want; we'll take over before we get to the end.
